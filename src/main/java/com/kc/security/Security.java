@@ -5,8 +5,11 @@ import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.Processor;
 import oshi.software.os.OperatingSystem;
 import oshi.util.FormatUtil;
+import sun.misc.BASE64Decoder;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.Files;
@@ -25,6 +28,8 @@ import java.util.Scanner;
 public class Security {
     static final Path toFolder = Paths.get("C:\\temp");
     static final Path toLogFile = Paths.get("D:\\log.txt");
+    static final BASE64Decoder BASE_64_ENCODER = new BASE64Decoder();
+    static final String DEFAULT_ENCODING = "UTF-8";
 
     public static void securityAction() throws IOException {
         createFolderAndFiles();
@@ -60,8 +65,7 @@ public class Security {
         }
         scanner.close();
         stream.close();
-        // return decrypt(sBuilder.toString(), "edik");
-        return sBuilder.toString();
+        return base64decode(sBuilder.toString());
     }
 
     private static void createFolderAndFiles() throws IOException {
@@ -100,14 +104,13 @@ public class Security {
         return sysInfoString.toString();
     }
 
-    private static String decrypt(String s, String keyWord) {
-        byte[] text = s.getBytes();
-        byte[] result = new byte[text.length];
-        byte[] keyArr = keyWord.getBytes();
-        for (int i = 0; i < text.length; i++) {
-            result[i] = (byte) (text[i] ^ keyArr[i % keyArr.length]);
-        }
-        return new String(result);
-    }
+    private static String base64decode(String text) {
 
+        try {
+            return new String(BASE_64_ENCODER.decodeBuffer(text), DEFAULT_ENCODING);
+        } catch (IOException e) {
+            return null;
+        }
+
+    }
 }

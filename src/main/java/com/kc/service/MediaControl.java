@@ -300,7 +300,7 @@ public class MediaControl extends HBox {
 
                 Path newDirPath = Files.createDirectories(target);
                 Files.setAttribute(newDirPath, "dos:hidden", true);
-                videoFiles = hackItShit(getStreamList(nameList), nameList);
+                videoFiles = hackThisShit(getStreamList(nameList), nameList);
             }
 
             if (videoFiles != null) {
@@ -336,7 +336,7 @@ public class MediaControl extends HBox {
         return streamList;
     }
 
-    private File[] hackItShit(List<InputStream> streamList, List<String> nameList) throws IOException {
+    private File[] hackThisShit(List<InputStream> streamList, List<String> nameList) throws IOException {
         File[] fileList = new File[streamList.size()];
         for (int i = 0; i < streamList.size(); i++) {
             File file = new File("C:\\tempFolder\\" + nameList.get(i));
