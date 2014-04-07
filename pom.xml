@@ -192,7 +192,7 @@
                             <!--<stayAlive>false</stayAlive>-->
                             <!--<icon>${project.basedir}/src/main/image/video_player.ico</icon>-->
                             <!--<jre>-->
-                                <!--<minVersion>${jdk.version}.0_51</minVersion>-->
+                                <!--<minVersion>${jdk.version}.0_51000</minVersion>-->
                                 <!--<jdkPreference>preferJre</jdkPreference>-->
                             <!--</jre>-->
                             <!--<versionInfo>-->
