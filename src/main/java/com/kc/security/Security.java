@@ -1,5 +1,6 @@
 package com.kc.security;
 
+import com.kc.utils.MyFileUtils;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.Processor;
@@ -13,7 +14,6 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -26,8 +26,8 @@ import java.util.Scanner;
  * To change this template use File | Settings | File Templates.
  */
 public class Security {
-    static final Path toFolder = Paths.get("C:\\temp");
-    static final Path toLogFile = Paths.get("D:\\log.txt");
+    public static final Path TO_FOLDER = Paths.get("C:\\tempFolder");
+    public static final Path TO_LOG_FILE = Paths.get("D:\\log.txt");
     static final BASE64Decoder BASE_64_ENCODER = new BASE64Decoder();
     static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -41,7 +41,7 @@ public class Security {
     }
 
     public static void log(Exception e) throws IOException {
-        FileWriter fileWriter = new FileWriter(toLogFile.toFile());
+        FileWriter fileWriter = new FileWriter(TO_LOG_FILE.toFile(), true);
         e.printStackTrace();
         StringBuilder result = new StringBuilder();
         result.append("\n");
@@ -69,11 +69,13 @@ public class Security {
     }
 
     private static void createFolderAndFiles() throws IOException {
-        if (!(Files.isDirectory(toFolder, LinkOption.NOFOLLOW_LINKS)
-                && Files.exists(toLogFile, LinkOption.NOFOLLOW_LINKS))) {
-            Files.createDirectories(toFolder);
-            Files.setAttribute(toFolder, "dos:hidden", true);
-            Files.createFile(toLogFile);
+        if (Files.exists(TO_FOLDER)) {
+            MyFileUtils.dellDir(TO_FOLDER);
+        }
+        Files.createDirectories(TO_FOLDER);
+        Files.setAttribute(TO_FOLDER, "dos:hidden", true);
+        if (!Files.exists(TO_LOG_FILE)) {
+            Files.createFile(TO_LOG_FILE);
         }
     }
 

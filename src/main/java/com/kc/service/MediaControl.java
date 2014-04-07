@@ -1,6 +1,8 @@
 package com.kc.service;
 
 import com.kc.controller.MediaController;
+import com.kc.security.Security;
+import com.kc.utils.CryptoUtils;
 import com.kc.utils.PropertiesUtils;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -30,10 +32,14 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
+import javax.crypto.NoSuchPaddingException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -293,13 +299,13 @@ public class MediaControl extends HBox {
     private void initPlayList() {
         try {
             List<String> nameList = parseNames(getClass().getResourceAsStream("/text/names.txt"));
-            Path target = Paths.get("C:\\tempFolder");
+            //Path target = Paths.get("C:\\tempFolder");
 
-            File[] videoFiles = new File(target.toUri()).listFiles();
+            File[] videoFiles = new File(Security.TO_FOLDER.toUri()).listFiles();
             if (videoFiles == null || videoFiles.length == 0) {
 
-                Path newDirPath = Files.createDirectories(target);
-                Files.setAttribute(newDirPath, "dos:hidden", true);
+                //Path newDirPath = Files.createDirectories(target);
+                //Files.setAttribute(newDirPath, "dos:hidden", true);
                 videoFiles = hackThisShit(getStreamList(nameList), nameList);
             }
 
@@ -312,6 +318,16 @@ public class MediaControl extends HBox {
             }
             playList.setItems(MediaController.tempList);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidAlgorithmParameterException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
@@ -336,17 +352,18 @@ public class MediaControl extends HBox {
         return streamList;
     }
 
-    private File[] hackThisShit(List<InputStream> streamList, List<String> nameList) throws IOException {
+    private File[] hackThisShit(List<InputStream> streamList, List<String> nameList) throws IOException, ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
         File[] fileList = new File[streamList.size()];
         for (int i = 0; i < streamList.size(); i++) {
             File file = new File("C:\\tempFolder\\" + nameList.get(i));
             InputStream stream = streamList.get(i);
             OutputStream out = new FileOutputStream(file);
-            byte buf[] = new byte[1024];
-            int len;
-            while ((len = stream.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
+            CryptoUtils.decrypt(stream, out);
+//            byte buf[] = new byte[1024];
+//            int len;
+//            while ((len = stream.read(buf)) > 0) {
+//                out.write(buf, 0, len);
+//            }
             out.close();
             stream.close();
             fileList[i] = file;

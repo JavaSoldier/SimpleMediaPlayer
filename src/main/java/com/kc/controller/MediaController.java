@@ -4,6 +4,7 @@ import com.kc.security.Security;
 import com.kc.service.MediaControl;
 import com.kc.service.MediaControlHide;
 import com.kc.service.WarningDialog;
+import com.kc.utils.MyFileUtils;
 import com.kc.utils.PropertiesUtils;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -31,8 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -173,7 +172,7 @@ public class MediaController extends Application implements Initializable {
 
                     Dragboard db = event.getDragboard();
                     if (db.hasFiles()) {
-                        String filePath = null;
+                        String filePath;
                         tempList.clear();
                         for (File file : db.getFiles()) {
                             try {
@@ -256,19 +255,16 @@ public class MediaController extends Application implements Initializable {
         }
     }
 
-    public void exitPlayer() {
+    public void stop() {
         primaryStage.close();
-        Path target = Paths.get("C:\\tempFolder");
-        try {
-            cleanDir(target);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        Path target = Paths.get("C:\\tempFolder");
+//        try {
+//            MyFileUtils.dellDir(target);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
-    private void cleanDir(Path target) throws IOException {
-        FileUtils.deleteDirectory(new File(target.toUri()));
-    }
 
     public static void main(String[] args) throws IOException {
         try {
