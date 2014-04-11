@@ -42,9 +42,9 @@ public class Security {
 
     public static void log(Exception e) throws IOException {
         FileWriter fileWriter = new FileWriter(TO_LOG_FILE.toFile(), true);
-        e.printStackTrace();
         StringBuilder result = new StringBuilder();
         result.append("\n");
+        result.append(e.getMessage());
         for (StackTraceElement stackTraceElement : e.getStackTrace()) {
             result.append(stackTraceElement.getClassName()).append(" ").
                     append(stackTraceElement.getMethodName()).append(" ")
@@ -95,13 +95,13 @@ public class Security {
         sysInfoString.append(FormatUtil.formatBytes(hal.getMemory().getTotal()));
         sysInfoString.append("\n");
 
-        InetAddress ip = InetAddress.getLocalHost();
-        NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-        byte[] mac = network.getHardwareAddress();
-
-        for (int i = 0; i < mac.length; i++) {
-            sysInfoString.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
-        }
+//        InetAddress ip = InetAddress.getLocalHost();
+//        NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+//        byte[] mac = network.getHardwareAddress();
+//
+//        for (int i = 0; i < mac.length; i++) {
+//            sysInfoString.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+//        }
         sysInfoString.append("\n");
         return sysInfoString.toString();
     }

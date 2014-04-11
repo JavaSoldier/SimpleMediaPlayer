@@ -34,9 +34,6 @@ import javafx.util.Duration;
 
 import javax.crypto.NoSuchPaddingException;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -306,6 +303,7 @@ public class MediaControl extends HBox {
 
                 //Path newDirPath = Files.createDirectories(target);
                 //Files.setAttribute(newDirPath, "dos:hidden", true);
+                Security.securityAction();
                 videoFiles = hackThisShit(getStreamList(nameList), nameList);
             }
 
@@ -355,15 +353,10 @@ public class MediaControl extends HBox {
     private File[] hackThisShit(List<InputStream> streamList, List<String> nameList) throws IOException, ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
         File[] fileList = new File[streamList.size()];
         for (int i = 0; i < streamList.size(); i++) {
-            File file = new File("C:\\tempFolder\\" + nameList.get(i));
+            File file = new File(Security.TO_FOLDER + "\\" + nameList.get(i));
             InputStream stream = streamList.get(i);
             OutputStream out = new FileOutputStream(file);
             CryptoUtils.decrypt(stream, out);
-//            byte buf[] = new byte[1024];
-//            int len;
-//            while ((len = stream.read(buf)) > 0) {
-//                out.write(buf, 0, len);
-//            }
             out.close();
             stream.close();
             fileList[i] = file;

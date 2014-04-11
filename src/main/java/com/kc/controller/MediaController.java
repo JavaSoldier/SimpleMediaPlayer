@@ -4,7 +4,6 @@ import com.kc.security.Security;
 import com.kc.service.MediaControl;
 import com.kc.service.MediaControlHide;
 import com.kc.service.WarningDialog;
-import com.kc.utils.MyFileUtils;
 import com.kc.utils.PropertiesUtils;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -26,10 +25,10 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ResourceBundle;
@@ -45,10 +44,8 @@ public class MediaController extends Application implements Initializable {
     public static ObservableList<File> tempList = FXCollections
             .observableArrayList();
     public static BorderPane root;
-    public static VBox box = new VBox();
     public MenuBar menuBar;
     private static MediaControl mediaControl;
-    private static Stage mediaControlStage;
     private static StackPane stackPane;
     private Executor executor;
 
@@ -59,7 +56,6 @@ public class MediaController extends Application implements Initializable {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-
         try {
             MediaController.primaryStage = primaryStage;
             primaryStage.setTitle("Media Player");
@@ -175,19 +171,15 @@ public class MediaController extends Application implements Initializable {
                         String filePath;
                         tempList.clear();
                         for (File file : db.getFiles()) {
-                            try {
-                                if (PropertiesUtils.readFormats().contains("*" + file.getAbsolutePath().substring(file.getAbsolutePath().length() - 4))) {
-                                    tempList.add(file);
-                                    filePath = file.getAbsolutePath();
-                                    if (null != mediaPlayer)
-                                        mediaPlayer.stop();
-                                    mediaControl.resetPlayList(tempList);
-                                    playVideo(filePath);
-                                } else {
-                                    WarningDialog.showWarning(primaryStage);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            if (PropertiesUtils.readFormats().contains("*" + file.getAbsolutePath().substring(file.getAbsolutePath().length() - 4))) {
+                                tempList.add(file);
+                                filePath = file.getAbsolutePath();
+                                if (null != mediaPlayer)
+                                    mediaPlayer.stop();
+                                mediaControl.resetPlayList(tempList);
+                                playVideo(filePath);
+                            } else {
+                                WarningDialog.showWarning(primaryStage);
                             }
                         }
                     }
@@ -224,56 +216,42 @@ public class MediaController extends Application implements Initializable {
                     });
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Security.log(e);
+            throw e;
         }
     }
 
     public void playVideo(String MEDIA_URL) {
         try {
             MEDIA_URL = URLEncoder.encode(MEDIA_URL, "UTF-8");
-            MEDIA_URL = "file:/"
-                    + (MEDIA_URL).replace("\\", "/").replace("+", "%20");
-            Media media = new Media(MEDIA_URL);
-            // create media player
-            mediaPlayer = new MediaPlayer(media);
-            mediaControl.setMediaPlayer(mediaPlayer);
-            mediaView = new MediaView(mediaPlayer);
-            mediaControl.setMediaView(mediaView);
-            mediaPlayer.setAutoPlay(true);
-            mediaPlayer.play();
-            mediaView.setPreserveRatio(false);
-            mediaView.autosize();
-
-            root.setCenter(mediaView);
-
-            mediaView.setFitHeight(scene.getHeight() - 25 - 40);
-            mediaView.setFitWidth(scene.getWidth());
-            MediaControl.volButton.setSelected(false);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
+        MEDIA_URL = "file:/"
+                + (MEDIA_URL).replace("\\", "/").replace("+", "%20");
+        Media media = new Media(MEDIA_URL);
+        // create media player
+        mediaPlayer = new MediaPlayer(media);
+        mediaControl.setMediaPlayer(mediaPlayer);
+        mediaView = new MediaView(mediaPlayer);
+        mediaControl.setMediaView(mediaView);
+        mediaPlayer.setAutoPlay(true);
+        mediaPlayer.play();
+        mediaView.setPreserveRatio(false);
+        mediaView.autosize();
+
+        root.setCenter(mediaView);
+
+        mediaView.setFitHeight(scene.getHeight() - 25 - 40);
+        mediaView.setFitWidth(scene.getWidth());
+        MediaControl.volButton.setSelected(false);
     }
 
-    public void stop() {
+    public void stop() throws Exception {
         primaryStage.close();
-//        Path target = Paths.get("C:\\tempFolder");
-//        try {
-//            MyFileUtils.dellDir(target);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
     }
-
 
     public static void main(String[] args) throws IOException {
-        try {
-            Security.securityAction();
-            launch(args);
-        } catch (Exception e) {
-            Security.log(e);
-            System.exit(0);
-        }
+        launch(args);
     }
-
 }

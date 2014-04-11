@@ -1,5 +1,7 @@
 package com.kc.utils;
 
+import com.kc.security.Security;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.NoSuchPaddingException;
@@ -26,6 +28,7 @@ public class CryptoUtils {
         //get Cipher instance and initiate in decrypt mode
         Cipher decryptCipher = Cipher.getInstance("AES");
         decryptCipher.init(Cipher.DECRYPT_MODE, key);
+
         //create CipherOutputStream to decrypt the data using decryptCipher
         is = new CipherInputStream(is, decryptCipher);
         writeData(is, os);
